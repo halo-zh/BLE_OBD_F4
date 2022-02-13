@@ -1,0 +1,9 @@
+ble_obd\isotp.o: ..\Core\Src\isotp.c
+ble_obd\isotp.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+ble_obd\isotp.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\assert.h
+ble_obd\isotp.o: ../Core/Inc/isotp.h
+ble_obd\isotp.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+ble_obd\isotp.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+ble_obd\isotp.o: ../Core/Inc/isotp_defines.h
+ble_obd\isotp.o: ../Core/Inc/isotp_config.h
+ble_obd\isotp.o: ../Core/Inc/isotp_user.h

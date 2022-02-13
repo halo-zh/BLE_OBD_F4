@@ -7,7 +7,7 @@
 #include "usart.h"
 #include "can.h"
 
-/* 私有类型定义 --------------------------------------------------------------*/
+/* 私有类型定义 -----------哈喽---------------------------------------------------*/
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart);
 

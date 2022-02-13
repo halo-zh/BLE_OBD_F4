@@ -1,0 +1,9 @@
+MDK-ARM/CCU/
+.vscode/c_cpp_properties.json
+.vscode/c_cpp_properties.json
+.vscode/settings.json
+*.orig
+MDK-ARM/CCU.uvguix.ZAA6WX
+*.d
+*.o
+*.crf
