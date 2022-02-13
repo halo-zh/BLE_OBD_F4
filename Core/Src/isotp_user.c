@@ -88,6 +88,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
    canRxID = rxHeader.StdId;
    canRxLen = rxHeader.DLC;
    
+   udpateCanInfo(&rxHeader,Data);
    canRecvMsgUpdate();
    
    if(((canRxID == 0x7DF) || (canRxID== 0x7e0 )))

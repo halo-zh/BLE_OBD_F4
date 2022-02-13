@@ -34,8 +34,89 @@ extern uint8_t Data[8];
 extern uint16_t CANMsgIDStatus;
 
 
+uint8_t batSOC=0;
+uint8_t batSOH=0;
+uint32_t batVolt=0;
+int32_t batCurrent=0;
+int8_t  batTemp=0;
+uint8_t chargeStatus;
+void udpateCanInfo(CAN_RxHeaderTypeDef *rxMsg,uint8_t* canRxData)
+{
+
+   uint32_t canRxID = rxMsg->StdId;
+   uint8_t canRxLen = rxMsg->DLC;
+   uint32_t tempCurrent=0;
+   uint32_t tempRPM=0;
+   
+   //0x47 16 01(DIR) DID DATA_Len Data[5] 
+   if(canRxID == 0x544)
+   {
+     if((canRxData[0]== 0x47)&&(canRxData[1] == 0x16))
+     {
+       if(canRxData[3] == 0x08)  //little endian
+       {
+         batTemp = canRxData[5];        
+       }
+       else if(canRxData[3] == 0x09)  //little endian
+       {
+         batVolt = (uint32_t)canRxData[5]+((uint32_t)canRxData[6]<<8) + ((uint32_t)canRxData[7]<<16);
+         batVolt = batVolt/100;  //unit 0.1a  -->0x184 byte4-5 big endian
+       }
+       else if(canRxData[3] == 0x0a)
+       {
+          tempCurrent = (uint32_t)canRxData[5]+((uint32_t)canRxData[6]<<8) + ((uint32_t)canRxData[7]<<16);
+           if(tempCurrent >0x30d40) //if current >200A,it should be negative
+               batCurrent = 0xffffff- tempCurrent;
+           else
+              batCurrent  = tempCurrent;
+           
+           batCurrent = batCurrent/100;   //0.1a unit--> 0x184 byte [6-7]
+       }
+       else if(canRxData[3] == 0x0d)  //[byte1]
+       {
+         batSOC = canRxData[5]+(canRxData[6]<<8) + (canRxData[7]<<16);
+       }
+       else if(canRxData[3] == 0x0e) //[byte0]
+       {
+         batSOH = canRxData[5]+(canRxData[6]<<8) + (canRxData[7]<<16);
+       }
+       else if(canRxData[3] == 0x16) //[byte0]
+       {
+         if(canRxData[5]&0x80)   //charging
+         {
+           chargeStatus = 1;
+         }
+         if(canRxData[5]&0x40)
+         {
+           chargeStatus = 0;
+         }     
+       }
+     } 
+     
+     
+      CANRxData[0][1]= (uint8_t)AQ_MSG0_0 & 0xff;
+      CANRxData[0][2]= batSOH;
+      CANRxData[0][3] = batSOC;
+      CANRxData[0][4] = chargeStatus;
+      CANRxData[0][6] =  ((batVolt&0xff00)>>8);
+      CANRxData[0][7] =  (batVolt&0x00ff);
+      CANRxData[0][8] =  ((batCurrent&0xff00)>>8);
+      CANRxData[0][9] =  (batCurrent&0x00ff);
+      
+                  
+      setBit(CANMsgIDStatus,0);
+      if( CANMsgIDStatus != 0)
+      {
+        CANDataAvalFlag=5;
+        BLEStopSendMsgDelayCount=5;   /*use the delay to optimize user feeling */
+      }
+   }  
+}
+
+
 void canRecvMsgUpdate(void)
 {
+  uint8_t temp=0;
   if(rxHeader.IDE == CAN_ID_STD)
     { 
         if(((rxHeader.StdId >= AQ_MSG0_0 )&&(rxHeader.StdId <= AQ_MSG7_1)) ||
@@ -56,6 +137,15 @@ void canRecvMsgUpdate(void)
                 case AQ_MSG0_0:
                 {
                   CANRxData[0][1]= (uint8_t)rxHeader.StdId & 0xff;
+                  Data[0]=batSOH;
+                  Data[1]=batSOC;
+                  Data[2]=chargeStatus;
+                  Data[3]=batTemp;
+                  Data[4]=((batVolt&0xff00)>>8);
+                  Data[5]=(batVolt&0x00ff);
+                  Data[6]=((batCurrent&0xff00)>>8);
+                  Data[7]=(batCurrent&0x00ff);
+                  
                   memcpy((void*)&CANRxData[0][2],Data,8);    
                   setBit(CANMsgIDStatus,0);
                   break;
@@ -137,9 +227,15 @@ void canRecvMsgUpdate(void)
                   setBit(CANMsgIDStatus,11);
                   break;
                 }
-                case AQ_MSG6_0:
+                case AQ_MSG6_0:  //0x184 fault info of inverter
                 {
                   CANRxData[6][1]= rxHeader.StdId;
+                  
+                  temp= ((Data[2]&0x01)<<7)+((Data[2]&0x02)<<5)+((Data[2]&0x04)<<3)+((Data[2]&0x08)<<1)+((Data[2]&0x10)>>1)+((Data[2]&0x20)>>3)+((Data[2]&0x40)>>5)+((Data[2]&0x80)>>7);
+                  Data[2]= temp;
+                  temp=0;
+                  temp = ((Data[3]&0x01)<<7)+((Data[3]&0x02)<<5)+((Data[3]&0x04)<<3);
+                  Data[3]=temp;
                   memcpy(&CANRxData[6][2],Data,8);
                   setBit(CANMsgIDStatus,12);
                   break;

@@ -77,6 +77,9 @@ extern uint8_t isOBDConnect;
 /* USER CODE BEGIN 0 */
 uint8_t data[1];
 CAN_TxHeaderTypeDef canMsg;
+CAN_TxHeaderTypeDef canReqBmsMsg;
+uint8_t reqToBmsData[8]={0x46,0x16,0x01,0x16,0x10,0x00};;
+
 uint32_t mailbox1;
 uint32_t delay=0;
 uint32_t preTick=0;
@@ -221,6 +224,11 @@ int main(void)
   canMsg.IDE = CAN_ID_STD;
   canMsg.RTR = CAN_RTR_DATA;
   
+  canReqBmsMsg.StdId = 0x528;
+  canReqBmsMsg.IDE = CAN_ID_STD;
+  canReqBmsMsg.RTR= CAN_RTR_DATA;
+  canReqBmsMsg.DLC=6;
+  
   memset(CANRxData,0xff,sizeof(CANRxData)/sizeof(uint8_t));
   HAL_GPIO_WritePin(BLE_WAKEUP_GPIO_Port,BLE_WAKEUP_Pin,GPIO_PIN_RESET); // set low to wake up BLE,
   HAL_GPIO_WritePin(BLE_RESET_GPIO_Port,BLE_RESET_Pin,GPIO_PIN_SET);  // RESET PIN HIGH, STOP RESET BLE
@@ -234,7 +242,7 @@ int main(void)
   HAL_Delay(10);
   CC2541_Send_CMD(BLE_SET_ID,0);  
   
- // MX_CAN1_Init();
+  MX_CAN1_Init();
   MX_CAN2_Init();
   CANMultiInit();
   /* USER CODE END 2 */
@@ -271,7 +279,12 @@ int main(void)
      }
      
      HAL_CAN_AddTxMessage(&hcan2,&canMsg,data,&mailbox1);
-     HAL_CAN_AddTxMessage(&hcan1,&canMsg,data,&mailbox1);
+     HAL_CAN_AddTxMessage(&hcan2,&canReqBmsMsg,reqToBmsData,&mailbox1);
+     
+     
+     
+   //  HAL_CAN_AddTxMessage(&hcan1,&canMsg,data,&mailbox1);
+   //  HAL_CAN_AddTxMessage(&hcan1,&canReqBmsMsg,reqToBmsData,&mailbox1);
      toggleLeds();
      sendAllBLEMsg();
      if(CANDataAvalFlag>0) CANDataAvalFlag--;

@@ -129,7 +129,7 @@ void onRecvCommMessage(uint32_t canID,uint8_t canData[],uint8_t DataLen)
   if(canID == 0x184)
   {
     memset(dtcNow,0x00,sizeof(dtcNow));
-    if((canData[3]&0x04) !=0)  // throttle fault
+    if((canData[3]&0x20) !=0)  // throttle fault  04->20
     {    
       dtc[0].isDTC =1;
       dtc[0].dtc= 0x0120; 
@@ -137,7 +137,7 @@ void onRecvCommMessage(uint32_t canID,uint8_t canData[],uint8_t DataLen)
       dtcNow[0].dtc= 0x0120;
     }
      
-    if((canData[3]&0x1) !=0)  // MOTOR overheat
+    if((canData[3]&0x80) !=0)  // MOTOR overheat 01->80
     {    
       dtc[1].isDTC =1;
       dtc[1].dtc= 0x0a2b;
@@ -145,7 +145,7 @@ void onRecvCommMessage(uint32_t canID,uint8_t canData[],uint8_t DataLen)
       dtcNow[1].dtc= 0x0a2b;
     }
     
-    if((canData[2]&0x08) !=0)  // over volatage
+    if((canData[2]&0x10) !=0)  // over volatagem08->10
     {
       dtc[2].isDTC =1;
       dtc[2].dtc=  0X0AFB;
@@ -154,7 +154,7 @@ void onRecvCommMessage(uint32_t canID,uint8_t canData[],uint8_t DataLen)
     }
     
     
-    if((canData[2]&0x20) !=0)  // low volatage
+    if((canData[2]&0x04) !=0)  // low volatage  20->04
     {     
       dtc[3].isDTC =1;
       dtc[3].dtc=  0X0AFa;
@@ -162,7 +162,7 @@ void onRecvCommMessage(uint32_t canID,uint8_t canData[],uint8_t DataLen)
       dtcNow[3].dtc=  0X0AFa;
     }
     
-    if((canData[2]&0x80) !=0)  // HALL fault
+    if((canData[2]&0x01) !=0)  // HALL fault 80->01
     {      
       dtc[4].isDTC =1;
       dtc[4].dtc=0x0A3f;
@@ -170,7 +170,7 @@ void onRecvCommMessage(uint32_t canID,uint8_t canData[],uint8_t DataLen)
       dtcNow[4].dtc=0x0A3f;
     }
     
-    if((canData[2]&0x02) !=0)  // drive fault
+    if((canData[2]&0x40) !=0)  // drive fault 02->40
     {      
       dtc[5].isDTC =1;
       dtc[5].dtc=0x0A1B;
@@ -178,7 +178,7 @@ void onRecvCommMessage(uint32_t canID,uint8_t canData[],uint8_t DataLen)
       dtcNow[5].dtc=0x0A1B;
     }
     
-    if((canData[2]&0x10) !=0)  // INVERTER OVER TEMP
+    if((canData[2]&0x08) !=0)  // INVERTER OVER TEMP 10->08
     {      
       dtc[6].isDTC =1;
       dtc[6].dtc=0x0A3C;
