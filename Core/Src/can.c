@@ -22,8 +22,12 @@
 
 /* USER CODE BEGIN 0 */
 #include "string.h"
-extern uint8_t CANRxData[20][20];
-extern uint8_t CANDataAvalFlag;
+CAN_TxHeaderTypeDef canMsg;
+CAN_TxHeaderTypeDef canReqBmsMsg;
+uint8_t reqToBmsData[8]={0x46,0x16,0x01,0x16,0x10,0x00};;
+uint32_t mailbox1;
+uint8_t CANRxData[20][20];
+uint8_t CANDataAvalFlag;
 extern uint8_t BLEStopSendMsgDelayCount;
 uint8_t CanProtocolNumb=0;
 uint8_t CANSrcIndex=0;
@@ -40,6 +44,22 @@ uint32_t batVolt=0;
 int32_t batCurrent=0;
 int8_t  batTemp=0;
 uint8_t chargeStatus;
+
+
+void initCANSndMsg()
+{
+  canMsg.DLC =1;
+  canMsg.StdId = 0x123;
+  canMsg.IDE = CAN_ID_STD;
+  canMsg.RTR = CAN_RTR_DATA;
+  
+  canReqBmsMsg.StdId = 0x528;
+  canReqBmsMsg.IDE = CAN_ID_STD;
+  canReqBmsMsg.RTR= CAN_RTR_DATA;
+  canReqBmsMsg.DLC=6;
+    
+  memset(CANRxData,0xff,sizeof(CANRxData)/sizeof(uint8_t));
+}
 void udpateCanInfo(CAN_RxHeaderTypeDef *rxMsg,uint8_t* canRxData)
 {
 
@@ -113,6 +133,11 @@ void udpateCanInfo(CAN_RxHeaderTypeDef *rxMsg,uint8_t* canRxData)
    }  
 }
 
+
+void reqBMSData(uint8_t dataID, uint8_t dataLen)
+{
+   HAL_CAN_AddTxMessage(&hcan2,&canReqBmsMsg,reqToBmsData,&mailbox1);
+}
 
 void canRecvMsgUpdate(void)
 {

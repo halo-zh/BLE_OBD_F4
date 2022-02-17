@@ -26,7 +26,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "isotp_user.h"
+#include "ble_app.h"
+#include "gpio.h"
+#include "can.h"
+#include "appOBD.h"
+extern uint8_t CANDataAvalFlag;
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -141,8 +146,11 @@ void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
+  TpInit();
   for(;;)
   {
+    TpTask();
+    DescTask();
     osDelay(1);
   }
   /* USER CODE END StartDefaultTask */
@@ -158,10 +166,14 @@ void StartDefaultTask(void const * argument)
 void BleMainTask(void const * argument)
 {
   /* USER CODE BEGIN BleMainTask */
+    enableBLE();
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    checkBLEConnectStatus();
+    if(CANDataAvalFlag>0) CANDataAvalFlag--;
+    sendAllBLEMsg();
+    osDelay(1000);
   }
   /* USER CODE END BleMainTask */
 }
@@ -176,6 +188,7 @@ void BleMainTask(void const * argument)
 void CANReqMainTask(void const * argument)
 {
   /* USER CODE BEGIN CANReqMainTask */
+  initCANSndMsg();
   /* Infinite loop */
   for(;;)
   {
@@ -197,7 +210,9 @@ void LedControlMainTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    osDelay(1000);
+    monitorDTC();
+    toggleLeds();
   }
   /* USER CODE END LedControlMainTask */
 }

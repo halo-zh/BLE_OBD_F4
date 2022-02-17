@@ -1,7 +1,7 @@
-
-
 #include "can.h"
 #include "gpio.h"
+#include "appOBD.h"
+#include "string.h"
 
 uint16_t engineRPM=0;
 uint8_t throttlePercent=0;
@@ -63,10 +63,34 @@ void clearAllDtc()
   memset(dtcNow,0x00,sizeof(dtcNow));
   
 }
+extern uint8_t preDtcCnt;
+uint8_t data[1];
+void monitorDTC()
+{
+
+     countDTC();
+     if(preDtcCnt != DTCnumber)
+     {      
+        saveDtcToFlash();
+        preDtcCnt= DTCnumber;
+     }
+     
+     data[0]= 0x55;
+     countDTCNow();
+     if(DTCnumber !=0)
+     {    
+       data[0]= 0xAA;
+     }
+     
+     countDTC();
+     if(DTCnumber !=0)
+     {    
+       data[0]= 0xAA;
+     }   
+     HAL_CAN_AddTxMessage(&hcan2,&canMsg,data,&mailbox1);
+}
 
 uint32_t eraseResult=0;
-
-
 void saveDtcToFlash()
 {
   uint32_t startAddr = 0x080e0000;
@@ -105,7 +129,6 @@ void copyDtcFromFlash()
     memset((uint8_t*)&dtc,0x00,sizeof(dtc));
     saveDtcToFlash();
   }
-  
 }
 
 

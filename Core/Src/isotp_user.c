@@ -3,7 +3,8 @@
 #include "can.h"
 #include "appOBD.h"
 /* user implemented, print debug message */
-
+extern void obdDiagReqHandler(uint8_t data[],uint8_t * dlc);
+extern void onRecvCommMessage(uint32_t,uint8_t data[8],uint8_t);
 extern uint8_t data[8];
 extern void canRecvMsgUpdate(void);
 

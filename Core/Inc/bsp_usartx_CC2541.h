@@ -21,7 +21,7 @@
                                           if(HC05_DEBUG_ON)\
                                           printf("<<-HC05-DEBUG->> [%d]"fmt"\n",__LINE__, ##arg);\
                                           }while(0)
-
+#define UART_BUFF_SIZE      40
 /* ¿©’π±‰¡ø ------------------------------------------------------------------*/
 extern UART_HandleTypeDef husartx;
 
@@ -34,6 +34,7 @@ void Usart_SendByte(uint8_t ch );
 void Usart_SendStr_length(uint8_t *str,uint32_t strlen );
 uint8_t CC2541_Send_CMD(char* cmd,uint8_t clean);
 
+extern uint8_t uart_buff[UART_BUFF_SIZE];
 extern void sendBLEMsg(void);
 #endif  /* __BSP_USARTX_CC2541_H__ */
 

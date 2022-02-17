@@ -8,6 +8,7 @@
 "ble_obd\stm32f4xx_it.o"
 "ble_obd\stm32f4xx_hal_msp.o"
 "ble_obd\stm32f4xx_hal_timebase_tim.o"
+"ble_obd\ble_app.o"
 "ble_obd\stm32f4xx_hal_can.o"
 "ble_obd\stm32f4xx_hal_rcc.o"
 "ble_obd\stm32f4xx_hal_rcc_ex.o"

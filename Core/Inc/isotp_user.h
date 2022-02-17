@@ -1,6 +1,7 @@
 #ifndef __ISOTP_USER_H__
 #define __ISOTP_USER_H__
 
+
 /* user implemented, print debug message */
 void isotp_user_debug(const char* message, ...);
 
@@ -11,6 +12,7 @@ int  isotp_user_send_can(const uint32_t arbitration_id,
 /* user implemented, get millisecond */
 uint32_t isotp_user_get_ms(void);
 
+extern uint8_t isOBDConnect;
 extern void CANMultiInit(void);
 extern void TpInit(void);
 extern void TpTask(void);

@@ -67,7 +67,7 @@ void Usart_SendString(uint8_t *str)
 }
 
 //中断缓存串口数据
-#define UART_BUFF_SIZE      40
+
 __IO  uint16_t uart_p = 0;
 uint8_t   uart_buff[UART_BUFF_SIZE];
 
@@ -77,7 +77,7 @@ uint8_t   uart_buff[UART_BUFF_SIZE];
   * 返 回 值: 无
   * 说    明：无
   */
-extern uint8_t DataInFlag;
+uint8_t DataInFlag;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
   
@@ -160,7 +160,7 @@ uint8_t CC2541_Send_CMD(char* cmd,uint8_t clean)
 
 uint16_t CANMsgIDStatus=0;
 extern uint8_t CANTxDelayCount;
-extern uint8_t CANDataAvalFlag;
+
 
 
 
@@ -172,7 +172,7 @@ extern uint8_t CANDataAvalFlag;
 */
 
 
-extern uint8_t ConnStopFlag;
+uint8_t ConnStopFlag;
 uint8_t CC2541_Send_Data(char* data,uint8_t txlen)
 { 
       char * redata;

@@ -21,6 +21,53 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN 0 */
+#include "usart.h"
+#include "ble_app.h"
+#include "can.h"
+#include "isotp_user.h"
+void toggleLeds(void)
+{
+  if(isBLEConnect ==1)
+  {
+    HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_0);
+  }
+  else
+  {
+    HAL_GPIO_WritePin(LED_G_GPIO_Port,LED_G_Pin,GPIO_PIN_SET);
+  }
+  
+  if(CANDataAvalFlag >= 1)
+  {
+    HAL_GPIO_TogglePin(LED_Y_GPIO_Port,LED_Y_Pin);
+  }
+  else
+  {
+    HAL_GPIO_WritePin(LED_Y_GPIO_Port,LED_Y_Pin,GPIO_PIN_SET);
+  }
+  
+  
+  if(isOBDConnect>0)
+  {
+     isOBDConnect--;
+     HAL_GPIO_TogglePin(LED_R_GPIO_Port,LED_R_Pin);
+  }
+  else
+  {
+    HAL_GPIO_WritePin(LED_R_GPIO_Port,LED_R_Pin,GPIO_PIN_SET);
+  }
+  
+  
+   HAL_GPIO_TogglePin(LED_G_GPIO_Port,LED_G_Pin);
+}
+
+
+/* Here we need to check, if slave is connected ,is there any data to send from  BLE to mcu. so we can wake up the MCU here */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  HAL_GPIO_WritePin(BLE_WAKEUP_GPIO_Port,BLE_WAKEUP_Pin,GPIO_PIN_RESET);  // WAKE UP BLE
+  HAL_UART_Receive_IT(&huart1, &RxTemp,1);   // START receive UART DATA
+}
+
 
 /* USER CODE END 0 */
 

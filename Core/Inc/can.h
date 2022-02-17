@@ -35,7 +35,14 @@ extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
 
 /* USER CODE BEGIN Private defines */
+extern CAN_TxHeaderTypeDef canMsg;
+extern CAN_TxHeaderTypeDef canReqBmsMsg;
+extern uint8_t reqToBmsData[8];
+extern uint8_t CANDataAvalFlag;
+extern uint32_t mailbox1;
 
+void initCANSndMsg(void);
+void udpateCanInfo(CAN_RxHeaderTypeDef *rxMsg,uint8_t* canRxData);
 /* USER CODE END Private defines */
 
 void MX_CAN1_Init(void);
