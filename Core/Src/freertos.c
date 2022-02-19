@@ -31,6 +31,7 @@
 #include "gpio.h"
 #include "can.h"
 #include "appOBD.h"
+#include "can.h"
 extern uint8_t CANDataAvalFlag;
 /* USER CODE END Includes */
 
@@ -208,11 +209,30 @@ void LedControlMainTask(void const * argument)
 {
   /* USER CODE BEGIN LedControlMainTask */
   /* Infinite loop */
+	uint8_t index=0;
   for(;;)
   {
     osDelay(1000);
     monitorDTC();
     toggleLeds();
+		if(index%4==0)
+		{
+			reqBMSData(0x16,16);
+		}
+		else if(index%4==1)
+		{
+			reqBMSData(0x24,32);
+		}
+		else if(index%4==2)
+		{
+				reqBMSData(0x25,32);
+		}
+		else if(index%4==3)
+		{
+			reqBMSData(0x26,14);
+		}
+		index++;
+		
   }
   /* USER CODE END LedControlMainTask */
 }

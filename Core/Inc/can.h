@@ -42,36 +42,37 @@ extern uint8_t CANDataAvalFlag;
 extern uint32_t mailbox1;
 
 void initCANSndMsg(void);
-void udpateCanInfo(CAN_RxHeaderTypeDef *rxMsg,uint8_t* canRxData);
+void updateGreenwayBatInfo(CAN_RxHeaderTypeDef *rxMsg,uint8_t* canRxData);
+void reqBMSData(uint8_t dataID, uint8_t dataLen);
 /* USER CODE END Private defines */
 
 void MX_CAN1_Init(void);
 void MX_CAN2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-#define AQ_MSG0_0 0x181
-#define AQ_MSG0_1 0x183
+#define AQ_MSG0_181 0x181
+#define AQ_MSG0_183 0x183
 
-#define AQ_MSG1_0 0x160
-#define AQ_MSG1_1 0x161
+#define AQ_MSG160 0x160
+#define AQ_MSG161 0x161
 
-#define AQ_MSG2_0 0x162
-#define AQ_MSG2_1 0x163
+#define AQ_MSG162 0x162
+#define AQ_MSG163 0x163
 
-#define AQ_MSG3_0 0x164
-#define AQ_MSG3_1 0x165
+#define AQ_MSG164 0x164
+#define AQ_MSG165 0x165
 
-#define AQ_MSG4_0 0x166
-#define AQ_MSG4_1 0x167
+#define AQ_MSG166 0x166
+#define AQ_MSG167 0x167
 
-#define AQ_MSG5_0 0x168
-#define AQ_MSG5_1 0x169
+#define AQ_MSG168 0x168
+#define AQ_MSG169 0x169
 
-#define AQ_MSG6_0 0x184
-#define AQ_MSG6_1 0x185
+#define AQ_MSG184 0x184
+#define AQ_MSG185 0x185
 
-#define AQ_MSG7_0 0x186
-#define AQ_MSG7_1 0x187
+#define AQ_MSG186 0x186
+#define AQ_MSG187 0x187
 
 #define WOW_MSG0 0x10261022
 #define WOW_MSG1 0x1811D0F3

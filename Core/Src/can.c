@@ -37,14 +37,44 @@ uint32_t txMailBoxUsed=0;
 extern uint8_t Data[8];
 extern uint16_t CANMsgIDStatus;
 
+uint8_t gwCanBuffer[3][8];
+uint8_t preCANID=0;
+uint8_t canBufCnt=0;
+uint8_t curCANID=0;
+uint8_t grwBatDat[100];
 
-uint8_t batSOC=0;
-uint8_t batSOH=0;
-uint32_t batVolt=0;
-int32_t batCurrent=0;
-int8_t  batTemp=0;
-uint8_t chargeStatus;
 
+uint8_t gwBatSOC=0;
+uint8_t gwBatSOH=0;
+uint32_t gwBatVolt=0;
+int32_t gwBatCurrent=0;
+int8_t  gwBatTemp=0;
+uint8_t gwChargeStatus;
+uint16_t gwMaxcellVolt;
+uint16_t gwMincellVolt;
+int8_t  gwMaxcellTemp;
+int8_t  gwMincellTemp;
+
+uint16_t gwVoltCell_1;
+uint16_t gwVoltCell_2;
+uint16_t gwVoltCell_3;
+uint16_t gwVoltCell_4;
+uint16_t gwVoltCell_5;
+uint16_t gwVoltCell_6;
+uint16_t gwVoltCell_7;
+uint16_t gwVoltCell_8;
+uint16_t gwVoltCell_9;
+uint16_t gwVoltCell_10;
+uint16_t gwVoltCell_11;
+uint16_t gwVoltCell_12;
+uint16_t gwVoltCell_13;
+uint16_t gwVoltCell_14;
+uint16_t gwVoltCell_15;
+uint16_t gwVoltCell_16;
+uint16_t gwVoltCell_17;
+uint16_t gwVoltCell_18;
+uint16_t gwVoltCell_19;
+uint16_t gwVoltCell_20;
 
 void initCANSndMsg()
 {
@@ -60,92 +90,273 @@ void initCANSndMsg()
     
   memset(CANRxData,0xff,sizeof(CANRxData)/sizeof(uint8_t));
 }
-void udpateCanInfo(CAN_RxHeaderTypeDef *rxMsg,uint8_t* canRxData)
+void updateBLEMsg(void);
+void updateGwInfo(void)
+{
+	   uint32_t tempCurrent=0;
+	   uint8_t index=5;
+	
+     if((grwBatDat[0]== 0x47)&&(grwBatDat[1] == 0x16))
+     {
+       if(grwBatDat[3] == 0x08)  //little endian
+       {
+         gwBatTemp = grwBatDat[5];        
+       }
+       else if(grwBatDat[3] == 0x09)  //little endian
+       {
+         gwBatVolt = (uint32_t)grwBatDat[5]+((uint32_t)grwBatDat[6]<<8) + ((uint32_t)grwBatDat[7]<<16);
+         gwBatVolt = gwBatVolt/100;  //unit 0.1a  -->0x184 byte4-5 big endian
+       }
+       else if(grwBatDat[3] == 0x0a)
+       {
+          tempCurrent = (uint32_t)grwBatDat[5]+((uint32_t)grwBatDat[6]<<8) + ((uint32_t)grwBatDat[7]<<16)+ ((uint32_t)grwBatDat[8]<<24);
+           if(tempCurrent >0x7fffffff) 
+               gwBatCurrent = 0xffffff- tempCurrent;
+           else
+              gwBatCurrent  = tempCurrent;
+           
+           gwBatCurrent = gwBatCurrent/100;   //0.1a unit--> 0x184 byte [6-7]
+       }
+       else if(grwBatDat[3] == 0x0d)  //[byte1]
+       {
+         gwBatSOC = grwBatDat[5]+(grwBatDat[6]<<8) + (grwBatDat[7]<<16);
+       }
+       else if(grwBatDat[3] == 0x0e) //[byte0]
+       {
+         gwBatSOH = grwBatDat[5]+(grwBatDat[6]<<8) + (grwBatDat[7]<<16);
+       }
+       else if(grwBatDat[3] == 0x16) //[byte0]
+       {
+         if(grwBatDat[5]&0x80)   //charging
+         {
+           gwChargeStatus = 1;
+         }
+         if(grwBatDat[5]&0x40)
+         {
+           gwChargeStatus = 0;
+         }     
+       }
+			 else if(grwBatDat[3]== 0x26)
+			 {
+				 gwMaxcellVolt=grwBatDat[5+8]+(grwBatDat[5+9]<<8);
+				 gwMincellVolt=grwBatDat[5+10]+(grwBatDat[5+9]<<11);
+				 gwMaxcellTemp=grwBatDat[5+12];
+				 gwMincellTemp=grwBatDat[5+13];
+			 }
+			 else if(grwBatDat[3]== 0x24)
+			 {
+			    gwVoltCell_1 = grwBatDat[index]+grwBatDat[index+1];
+				  index+=2;
+				  gwVoltCell_2 = grwBatDat[index]+grwBatDat[index+1];
+				 index+=2;
+				  gwVoltCell_3 = grwBatDat[index]+grwBatDat[index+1];
+				 index+=2;
+				  gwVoltCell_4 = grwBatDat[index]+grwBatDat[index+1];
+				 index+=2;
+				  gwVoltCell_5 = grwBatDat[index]+grwBatDat[index+1];
+				 index+=2;
+				  gwVoltCell_6 = grwBatDat[index]+grwBatDat[index+1];
+				 index+=2;
+				  gwVoltCell_7 = grwBatDat[index]+grwBatDat[index+1];
+				 index+=2;
+				  gwVoltCell_8 = grwBatDat[index]+grwBatDat[index+1];
+				 index+=2;
+				  gwVoltCell_9 = grwBatDat[index]+grwBatDat[index+1];
+				 index+=2;
+				  gwVoltCell_10 = grwBatDat[index]+grwBatDat[index+1];
+				 index+=2;
+				  gwVoltCell_11 = grwBatDat[index]+grwBatDat[index+1];
+					index+=2;
+				  gwVoltCell_12 = grwBatDat[index]+grwBatDat[index+1];
+					index+=2;
+				  gwVoltCell_13 = grwBatDat[index]+grwBatDat[index+1];
+					index+=2;
+				  gwVoltCell_14 = grwBatDat[index]+grwBatDat[index+1];
+					index+=2;
+				  gwVoltCell_15 = grwBatDat[index]+grwBatDat[index+1];
+					index+=2;
+				  gwVoltCell_16 = grwBatDat[index]+grwBatDat[index+1];				
+			 }
+			 else if(grwBatDat[3]== 0x25)
+			 {
+				 index =5;
+				 gwVoltCell_16 = grwBatDat[index]+grwBatDat[index+1];
+					index+=2;
+				  gwVoltCell_17 = grwBatDat[index]+grwBatDat[index+1];
+				 index+=2;
+				  gwVoltCell_18 = grwBatDat[index]+grwBatDat[index+1];
+				 index+=2;
+				  gwVoltCell_19 = grwBatDat[index]+grwBatDat[index+1];
+				 index+=2;
+				  gwVoltCell_20 = grwBatDat[index]+grwBatDat[index+1];
+			 }		 
+			 
+			 CANDataAvalFlag=5;
+       BLEStopSendMsgDelayCount=5;   /*use the delay to optimize user feeling */
+      
+			 memset(grwBatDat,0x00,sizeof(grwBatDat));
+	
+     }
+
+     updateBLEMsg();		 
+     
+     
+      
+}
+
+void updateBLEMsg(void)
+{
+			CANRxData[0][1]= (uint8_t)AQ_MSG0_181 & 0xff;
+      CANRxData[0][2]= gwBatSOH;
+      CANRxData[0][3] = gwBatSOC;
+      CANRxData[0][4] = gwChargeStatus;
+			CANRxData[0][5] = gwBatTemp;
+      CANRxData[0][6] =  ((gwBatVolt&0xff00)>>8);
+      CANRxData[0][7] =  (gwBatVolt&0x00ff);
+      CANRxData[0][8] =  ((gwBatCurrent&0xff00)>>8);
+      CANRxData[0][9] =  (gwBatCurrent&0x00ff);
+	
+			CANRxData[1][1] = 	(uint8_t)AQ_MSG160 & 0xff;
+      CANRxData[1][2] = 	(gwVoltCell_1&0xff00)>>8;
+      CANRxData[1][3] = 	gwVoltCell_1&0xff;
+      CANRxData[1][4] =	  (gwVoltCell_2&0xff00)>>8;
+	    CANRxData[1][5] = 	gwVoltCell_2&0xff;
+      CANRxData[1][6] =  (gwVoltCell_3&0xff00)>>8;
+      CANRxData[1][7] =   gwVoltCell_3&0xff;
+      CANRxData[1][8] =  (gwVoltCell_4&0xff00)>>8;
+      CANRxData[1][9] =   gwVoltCell_4&0xff;
+	
+			CANRxData[1][10]= (uint8_t)AQ_MSG161 & 0xff;
+      CANRxData[1][11] = 	(gwVoltCell_5&0xff00)>>8;
+      CANRxData[1][12] = 	gwVoltCell_5&0xff;
+      CANRxData[1][13] =	  (gwVoltCell_6&0xff00)>>8;
+	    CANRxData[1][14] = 	gwVoltCell_6&0xff;
+      CANRxData[1][15] =  (gwVoltCell_7&0xff00)>>8;
+      CANRxData[1][16] =   gwVoltCell_7&0xff;
+      CANRxData[1][17] =  (gwVoltCell_8&0xff00)>>8;
+      CANRxData[1][18] =   gwVoltCell_8&0xff;
+			
+			CANRxData[2][1] = 	(uint8_t)AQ_MSG162 & 0xff;
+      CANRxData[2][2] = 	(gwVoltCell_1&0xff00)>>8;
+      CANRxData[2][3] = 	gwVoltCell_1&0xff;
+      CANRxData[2][4] =	  (gwVoltCell_2&0xff00)>>8;
+	    CANRxData[2][5] = 	gwVoltCell_2&0xff;
+      CANRxData[2][6] =  (gwVoltCell_3&0xff00)>>8;
+      CANRxData[2][7] =   gwVoltCell_3&0xff;
+      CANRxData[2][8] =  (gwVoltCell_4&0xff00)>>8;
+      CANRxData[2][9] =   gwVoltCell_4&0xff;
+	
+			CANRxData[2][10]= (uint8_t)AQ_MSG163 & 0xff;
+      CANRxData[2][11] = 	(gwVoltCell_5&0xff00)>>8;
+      CANRxData[2][12] = 	gwVoltCell_5&0xff;
+      CANRxData[2][13] =	  (gwVoltCell_6&0xff00)>>8;
+	    CANRxData[2][14] = 	gwVoltCell_6&0xff;
+      CANRxData[2][15] =  (gwVoltCell_7&0xff00)>>8;
+      CANRxData[2][16] =   gwVoltCell_7&0xff;
+      CANRxData[2][17] =  (gwVoltCell_8&0xff00)>>8;
+      CANRxData[2][18] =   gwVoltCell_8&0xff;
+
+			CANRxData[3][1] = 	(uint8_t)AQ_MSG164 & 0xff;
+      CANRxData[3][2] = 	(gwVoltCell_1&0xff00)>>8;
+      CANRxData[3][3] = 	gwVoltCell_1&0xff;
+      CANRxData[3][4] =	  (gwVoltCell_2&0xff00)>>8;
+	    CANRxData[3][5] = 	gwVoltCell_2&0xff;
+      CANRxData[3][6] =  (gwVoltCell_3&0xff00)>>8;
+      CANRxData[3][7] =   gwVoltCell_3&0xff;
+      CANRxData[3][8] =  (gwVoltCell_4&0xff00)>>8;
+      CANRxData[3][9] =   gwVoltCell_4&0xff;
+			
+			
+			
+		  CANRxData[4][1] = 	(uint8_t)AQ_MSG166 & 0xff;
+      CANRxData[4][2] = 	(gwMaxcellVolt&0xff00)>>8;
+      CANRxData[4][3] = 	gwMaxcellVolt&0xff;
+      CANRxData[4][4] =	  (gwMincellVolt&0xff00)>>8;
+	    CANRxData[4][5] = 	gwMincellVolt&0xff;
+      CANRxData[4][6] =  0;
+      CANRxData[4][7] =  0;
+      CANRxData[4][8] =  ((gwMaxcellVolt-gwMincellVolt) &0xff00)>>8;
+      CANRxData[4][9] =   (gwMaxcellVolt-gwMincellVolt)&0xff;
+			
+			CANRxData[4][10] = 	(uint8_t)AQ_MSG167 & 0xff;
+      CANRxData[4][11] = 	(gwMaxcellTemp&0xff00)>>8;
+      CANRxData[4][12] = 	gwMaxcellTemp&0xff;
+      CANRxData[4][13] =	(gwMincellTemp&0xff00)>>8;
+	    CANRxData[4][14] = 	gwMincellTemp&0xff;
+      CANRxData[4][15] =  0;
+      CANRxData[4][16] =  0;
+      CANRxData[4][17] =  ((gwMaxcellTemp-gwMincellTemp) &0xff00)>>8;
+      CANRxData[4][18] =  (gwMaxcellTemp-gwMincellTemp)&0xff;
+			
+			
+			CANRxData[5][1] = 	(uint8_t)AQ_MSG168 & 0xff;
+      CANRxData[5][2] = 	(gwMaxcellVolt&0xff00)>>8;
+      CANRxData[5][3] = 	gwMaxcellVolt&0xff;
+      CANRxData[5][4] =	  (gwMincellVolt&0xff00)>>8;
+	    CANRxData[5][5] = 	gwMincellVolt&0xff;
+      CANRxData[5][6] =  0;
+      CANRxData[5][7] =  0;
+      CANRxData[5][8] =  ((gwMaxcellVolt-gwMincellVolt) &0xff00)>>8;
+      CANRxData[5][9] =   (gwMaxcellVolt-gwMincellVolt)&0xff;
+	    
+}
+
+
+
+void updateGreenwayBatInfo(CAN_RxHeaderTypeDef *rxMsg,uint8_t* canRxData)
 {
 
    uint32_t canRxID = rxMsg->StdId;
    uint8_t canRxLen = rxMsg->DLC;
-   uint32_t tempCurrent=0;
-   uint32_t tempRPM=0;
    
-   //0x47 16 01(DIR) DID DATA_Len Data[5] 
-   if(canRxID == 0x544)
-   {
-     if((canRxData[0]== 0x47)&&(canRxData[1] == 0x16))
-     {
-       if(canRxData[3] == 0x08)  //little endian
-       {
-         batTemp = canRxData[5];        
-       }
-       else if(canRxData[3] == 0x09)  //little endian
-       {
-         batVolt = (uint32_t)canRxData[5]+((uint32_t)canRxData[6]<<8) + ((uint32_t)canRxData[7]<<16);
-         batVolt = batVolt/100;  //unit 0.1a  -->0x184 byte4-5 big endian
-       }
-       else if(canRxData[3] == 0x0a)
-       {
-          tempCurrent = (uint32_t)canRxData[5]+((uint32_t)canRxData[6]<<8) + ((uint32_t)canRxData[7]<<16);
-           if(tempCurrent >0x30d40) //if current >200A,it should be negative
-               batCurrent = 0xffffff- tempCurrent;
-           else
-              batCurrent  = tempCurrent;
-           
-           batCurrent = batCurrent/100;   //0.1a unit--> 0x184 byte [6-7]
-       }
-       else if(canRxData[3] == 0x0d)  //[byte1]
-       {
-         batSOC = canRxData[5]+(canRxData[6]<<8) + (canRxData[7]<<16);
-       }
-       else if(canRxData[3] == 0x0e) //[byte0]
-       {
-         batSOH = canRxData[5]+(canRxData[6]<<8) + (canRxData[7]<<16);
-       }
-       else if(canRxData[3] == 0x16) //[byte0]
-       {
-         if(canRxData[5]&0x80)   //charging
-         {
-           chargeStatus = 1;
-         }
-         if(canRxData[5]&0x40)
-         {
-           chargeStatus = 0;
-         }     
-       }
-     } 
-     
-     
-      CANRxData[0][1]= (uint8_t)AQ_MSG0_0 & 0xff;
-      CANRxData[0][2]= batSOH;
-      CANRxData[0][3] = batSOC;
-      CANRxData[0][4] = chargeStatus;
-      CANRxData[0][6] =  ((batVolt&0xff00)>>8);
-      CANRxData[0][7] =  (batVolt&0x00ff);
-      CANRxData[0][8] =  ((batCurrent&0xff00)>>8);
-      CANRxData[0][9] =  (batCurrent&0x00ff);
-      
-                  
-      setBit(CANMsgIDStatus,0);
-      if( CANMsgIDStatus != 0)
-      {
-        CANDataAvalFlag=5;
-        BLEStopSendMsgDelayCount=5;   /*use the delay to optimize user feeling */
-      }
-   }  
+   uint32_t tempRPM=0;
+	 curCANID = rxMsg->StdId;
+	
+	 if(canRxID != 0x544)
+	 {
+		 return;
+	 }
+	
+	if((canRxData[0] == 0x47)&&(canRxData[1] == 0x16))
+	{	
+		updateGwInfo();
+		canBufCnt=0;	
+		memcpy(&grwBatDat[canBufCnt*8],CANRxData,canRxLen);
+		canBufCnt++;		
+	}
+	else
+	{
+		if(canBufCnt*8<80)
+		{
+			memcpy(&grwBatDat[canBufCnt*8],CANRxData,canRxLen);
+			canBufCnt++;
+		}
+	}
 }
 
 
 void reqBMSData(uint8_t dataID, uint8_t dataLen)
 {
+	uint8_t i=0;
+	reqToBmsData[3]=dataID;
+	reqToBmsData[4]=dataLen;
+	reqToBmsData[5]=0;
+	
+	for(i=0;i<5;i++)
+	{
+		reqToBmsData[5]+=reqToBmsData[i];
+	}
+	 HAL_CAN_AddTxMessage(&hcan1,&canReqBmsMsg,reqToBmsData,&mailbox1);
    HAL_CAN_AddTxMessage(&hcan2,&canReqBmsMsg,reqToBmsData,&mailbox1);
 }
 
-void canRecvMsgUpdate(void)
+void updateAQWowInfo(void)
 {
   uint8_t temp=0;
   if(rxHeader.IDE == CAN_ID_STD)
     { 
-        if(((rxHeader.StdId >= AQ_MSG0_0 )&&(rxHeader.StdId <= AQ_MSG7_1)) ||
-           ((rxHeader.StdId >= AQ_MSG1_0)&&(rxHeader.StdId<= AQ_MSG6_1)))
+        if(((rxHeader.StdId >= AQ_MSG0_181 )&&(rxHeader.StdId <= AQ_MSG187)) ||
+           ((rxHeader.StdId >= AQ_MSG160)&&(rxHeader.StdId<= AQ_MSG185)))
         {
            CanProtocolNumb =0;  /* this is AQ Protocol  */
            CANRxData[0][0]=0;
@@ -159,100 +370,100 @@ void canRecvMsgUpdate(void)
              
            switch(rxHeader.StdId)
           {
-                case AQ_MSG0_0:
+                case AQ_MSG0_181:
                 {
                   CANRxData[0][1]= (uint8_t)rxHeader.StdId & 0xff;
-                  Data[0]=batSOH;
-                  Data[1]=batSOC;
-                  Data[2]=chargeStatus;
-                  Data[3]=batTemp;
-                  Data[4]=((batVolt&0xff00)>>8);
-                  Data[5]=(batVolt&0x00ff);
-                  Data[6]=((batCurrent&0xff00)>>8);
-                  Data[7]=(batCurrent&0x00ff);
+                  Data[0]=gwBatSOH;
+                  Data[1]=gwBatSOC;
+                  Data[2]=gwChargeStatus;
+                  Data[3]=gwBatTemp;
+                  Data[4]=((gwBatVolt&0xff00)>>8);
+                  Data[5]=(gwBatVolt&0x00ff);
+                  Data[6]=((gwBatCurrent&0xff00)>>8);
+                  Data[7]=(gwBatCurrent&0x00ff);
                   
                   memcpy((void*)&CANRxData[0][2],Data,8);    
                   setBit(CANMsgIDStatus,0);
                   break;
                 }
-                case AQ_MSG0_1:
+                case AQ_MSG0_183:
                 {
                   CANRxData[0][10]= rxHeader.StdId;
                   memcpy(&CANRxData[0][11],Data,8);
                   setBit(CANMsgIDStatus,1);
                   break;
                 }
-                case AQ_MSG1_0:
+                case AQ_MSG160:
                 {
                   CANRxData[1][1]= rxHeader.StdId;
                   memcpy(&CANRxData[1][2],Data,8);  
                   setBit(CANMsgIDStatus,2);
                   break;
                 }
-                case AQ_MSG1_1:
+                case AQ_MSG161:
                 {
                   CANRxData[1][10]= rxHeader.StdId;
                   memcpy(&CANRxData[1][11],Data,8) ;  
                   setBit(CANMsgIDStatus,3);
                   break;
                 }
-                case AQ_MSG2_0:
+                case AQ_MSG162:
                 {
                   CANRxData[2][1]= rxHeader.StdId;
                   memcpy(&CANRxData[2][2],Data,8); 
                   setBit(CANMsgIDStatus,4);
                   break;
                 }
-                case AQ_MSG2_1:
+                case AQ_MSG163:
                 {
                   CANRxData[2][10]= rxHeader.StdId;
                   memcpy(&CANRxData[2][11],Data,8);   
                   setBit(CANMsgIDStatus,5);
                   break;
                 }
-                case AQ_MSG3_0:
+                case AQ_MSG164:
                 {
                   CANRxData[3][1]= rxHeader.StdId;
                   memcpy(&CANRxData[3][2],Data,8);
                   setBit(CANMsgIDStatus,6);
                   break;
                 }
-                case AQ_MSG3_1:
+                case AQ_MSG165:
                 {
                   CANRxData[3][10]= rxHeader.StdId;
                   memcpy(&CANRxData[3][11],Data,8);
                   setBit(CANMsgIDStatus,7);
                   break;
                 }
-                 case AQ_MSG4_0:
+                 case AQ_MSG166:
                 {
                   CANRxData[4][1]= rxHeader.StdId;
                   memcpy(&CANRxData[4][2],Data,8);
                   setBit(CANMsgIDStatus,8);
                   break;
                 }
-                case AQ_MSG4_1:
+                case AQ_MSG167:
                 {
                   CANRxData[4][10]= rxHeader.StdId;
                   memcpy(&CANRxData[4][11],Data,8); 
                   setBit(CANMsgIDStatus,9);
                   break;
                 }
-                case AQ_MSG5_0:
+                case AQ_MSG168:
                 {
                   CANRxData[5][1]= rxHeader.StdId;
                   memcpy(&CANRxData[5][2],Data,8);
                   setBit(CANMsgIDStatus,10);
                   break;
                 }
-                case AQ_MSG5_1:
+                case AQ_MSG169:
                 {
                   CANRxData[5][10]= rxHeader.StdId;
                   memcpy(&CANRxData[5][11],Data,8) ;
                   setBit(CANMsgIDStatus,11);
                   break;
                 }
-                case AQ_MSG6_0:  //0x184 fault info of inverter
+                case AQ_MSG184:  //0x184 fault info of inverter
                 {
                   CANRxData[6][1]= rxHeader.StdId;
                   
@@ -265,21 +476,21 @@ void canRecvMsgUpdate(void)
                   setBit(CANMsgIDStatus,12);
                   break;
                 }
-                case AQ_MSG6_1:
+                case AQ_MSG185:
                 {
                   CANRxData[6][10]= rxHeader.StdId;
                   memcpy(&CANRxData[6][11],Data,8) ;
                   setBit(CANMsgIDStatus,13);
                   break;
                 }
-                case AQ_MSG7_0:
+                case AQ_MSG186:
                 {
                   CANRxData[7][1]= rxHeader.StdId;
                   memcpy(&CANRxData[7][2],Data,8);
                   setBit(CANMsgIDStatus,14);
                   break;
                 }
-                case AQ_MSG7_1:
+                case AQ_MSG187:
                 {
                   CANRxData[7][10]= rxHeader.StdId;
                   memcpy(&CANRxData[7][11],Data,8) ;

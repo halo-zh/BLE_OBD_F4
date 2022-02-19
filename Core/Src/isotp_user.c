@@ -6,7 +6,7 @@
 extern void obdDiagReqHandler(uint8_t data[],uint8_t * dlc);
 extern void onRecvCommMessage(uint32_t,uint8_t data[8],uint8_t);
 extern uint8_t data[8];
-extern void canRecvMsgUpdate(void);
+extern void updateAQWowInfo(void);
 
 CAN_RxHeaderTypeDef rxHeader;
 uint8_t Data[8];
@@ -89,8 +89,8 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
    canRxID = rxHeader.StdId;
    canRxLen = rxHeader.DLC;
    
-   udpateCanInfo(&rxHeader,Data);
-   canRecvMsgUpdate();
+   updateGreenwayBatInfo(&rxHeader,Data);
+   updateAQWowInfo();
    
    if(((canRxID == 0x7DF) || (canRxID== 0x7e0 )))
    {
