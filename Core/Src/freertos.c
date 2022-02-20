@@ -215,19 +215,39 @@ void LedControlMainTask(void const * argument)
     osDelay(1000);
     monitorDTC();
     toggleLeds();
-		if(index%4==0)
+		if(index%20==0)
 		{
 			reqBMSData(0x16,16);
 		}
-		else if(index%4==1)
+		else if(index%20==2)
+		{
+			reqBMSData(0x8,32);
+		}
+		else if(index%20==4)
+		{
+			reqBMSData(0x9,4);
+		}
+		else if(index%20==5)
+		{
+			reqBMSData(0xa,4);
+		}
+		else if(index%20==6)
+		{
+			reqBMSData(0xd,4);
+		}
+		else if(index%20==10)
+		{
+			reqBMSData(0xe,4);
+		}
+		else if(index%20==12)
 		{
 			reqBMSData(0x24,32);
 		}
-		else if(index%4==2)
+		else if(index%20==14)
 		{
 				reqBMSData(0x25,32);
 		}
-		else if(index%4==3)
+		else if(index%20==16)
 		{
 			reqBMSData(0x26,14);
 		}

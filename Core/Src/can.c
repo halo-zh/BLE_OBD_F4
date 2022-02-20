@@ -76,6 +76,16 @@ uint16_t gwVoltCell_18;
 uint16_t gwVoltCell_19;
 uint16_t gwVoltCell_20;
 
+uint16_t gwVoltCellMax;
+uint16_t gwVoltCellMin;
+
+uint8_t gwDischargeTempLow;
+uint8_t gwDischargeTempHigh;
+uint8_t gwChargeTempLow;
+uint8_t gwChargeTempHigh;
+uint8_t gwChargeOverCurrent;
+uint8_t gwDischargeOverCurrent;
+
 void initCANSndMsg()
 {
   canMsg.DLC =1;
@@ -88,13 +98,18 @@ void initCANSndMsg()
   canReqBmsMsg.RTR= CAN_RTR_DATA;
   canReqBmsMsg.DLC=6;
     
-  memset(CANRxData,0xff,sizeof(CANRxData)/sizeof(uint8_t));
+  memset(CANRxData,0x00,sizeof(CANRxData)/sizeof(uint8_t));
 }
 void updateBLEMsg(void);
 void updateGwInfo(void)
 {
 	   uint32_t tempCurrent=0;
 	   uint8_t index=5;
+	   if((grwBatDat[0]!= 0x47)||(grwBatDat[1] != 0x16))
+		 {
+			 return;
+		 }
+	
 	
      if((grwBatDat[0]== 0x47)&&(grwBatDat[1] == 0x16))
      {
@@ -134,71 +149,245 @@ void updateGwInfo(void)
          if(grwBatDat[5]&0x40)
          {
            gwChargeStatus = 0;
-         }     
+         }
+				 
+				 if(grwBatDat[5+3]&0X20)
+				 {
+					 gwChargeOverCurrent =1;
+				 }
+				 else
+				 {
+					 gwChargeOverCurrent =0;
+				 }
+				 
+				 if(grwBatDat[5+3]&0X04)
+				 {
+					 gwDischargeOverCurrent =1;
+				 }
+				 else
+				 {
+					 gwDischargeOverCurrent =0;
+				 }
+				 
+         if(grwBatDat[5+4]&0X04)
+				 {
+						gwDischargeTempHigh =2;
+				 }
+				 else if(grwBatDat[5+4]&0X08)
+				 {
+						gwChargeTempHigh =2;
+				 }
+					else if(grwBatDat[5+4]&0X10)
+				 {
+						gwDischargeTempLow =2;
+				 }
+				else if(grwBatDat[5+4]&0X20)
+				 {
+						gwChargeTempLow =2;
+				 }				 
        }
 			 else if(grwBatDat[3]== 0x26)
 			 {
 				 gwMaxcellVolt=grwBatDat[5+8]+(grwBatDat[5+9]<<8);
-				 gwMincellVolt=grwBatDat[5+10]+(grwBatDat[5+9]<<11);
+				 gwMincellVolt=grwBatDat[5+10]+(grwBatDat[5+11]<<8);
 				 gwMaxcellTemp=grwBatDat[5+12];
 				 gwMincellTemp=grwBatDat[5+13];
 			 }
 			 else if(grwBatDat[3]== 0x24)
 			 {
-			    gwVoltCell_1 = grwBatDat[index]+grwBatDat[index+1];
+			    gwVoltCell_1 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 				  index+=2;
-				  gwVoltCell_2 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_2 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 				 index+=2;
-				  gwVoltCell_3 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_3 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 				 index+=2;
-				  gwVoltCell_4 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_4 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 				 index+=2;
-				  gwVoltCell_5 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_5 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 				 index+=2;
-				  gwVoltCell_6 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_6 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 				 index+=2;
-				  gwVoltCell_7 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_7 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 				 index+=2;
-				  gwVoltCell_8 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_8 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 				 index+=2;
-				  gwVoltCell_9 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_9 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 				 index+=2;
-				  gwVoltCell_10 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_10 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 				 index+=2;
-				  gwVoltCell_11 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_11 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 					index+=2;
-				  gwVoltCell_12 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_12 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 					index+=2;
-				  gwVoltCell_13 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_13 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 					index+=2;
-				  gwVoltCell_14 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_14 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 					index+=2;
-				  gwVoltCell_15 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_15 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 					index+=2;
-				  gwVoltCell_16 = grwBatDat[index]+grwBatDat[index+1];				
+				  gwVoltCell_16 = grwBatDat[index]+(grwBatDat[index+1]<<8);
+						
+					gwVoltCellMax=gwVoltCell_1;
+					gwVoltCellMin = gwVoltCell_1;
+					if(gwVoltCell_2>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_2;
+					}
+					
+					if(gwVoltCell_3>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_3;
+					}
+					
+					if(gwVoltCell_4>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_4;
+					}
+					
+					if(gwVoltCell_5>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_5;
+					}
+					if(gwVoltCell_6>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_6;
+					}
+					if(gwVoltCell_7>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_7;
+					}
+					if(gwVoltCell_8>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_8;
+					}
+					if(gwVoltCell_9>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_9;
+					}
+					if(gwVoltCell_10>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_10;
+					}
+					if(gwVoltCell_11>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_11;
+					}
+					if(gwVoltCell_12>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_12;
+					}
+					if(gwVoltCell_13>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_13;
+					}
+					if(gwVoltCell_14>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_14;
+					}
+					if(gwVoltCell_15>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_15;
+					}
+					if(gwVoltCell_16>gwVoltCellMax)
+					{
+						gwVoltCellMax = gwVoltCell_16;
+					}
+	
+					
+					if(gwVoltCell_2<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_2;
+					}
+					
+					if(gwVoltCell_3<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_3;
+					}
+					
+					if(gwVoltCell_4<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_4;
+					}
+					
+					if(gwVoltCell_5<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_5;
+					}
+					if(gwVoltCell_6<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_6;
+					}
+					if(gwVoltCell_7<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_7;
+					}
+					if(gwVoltCell_8<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_8;
+					}
+					if(gwVoltCell_9<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_9;
+					}
+					if(gwVoltCell_10<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_10;
+					}
+					if(gwVoltCell_11<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_11;
+					}
+					if(gwVoltCell_12<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_12;
+					}
+					if(gwVoltCell_13<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_13;
+					}
+					if(gwVoltCell_14<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_14;
+					}
+					if(gwVoltCell_15<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_15;
+					}
+					if(gwVoltCell_16<gwVoltCellMax)
+					{
+						gwVoltCellMin = gwVoltCell_16;
+					}
+					
+
+
+
 			 }
 			 else if(grwBatDat[3]== 0x25)
 			 {
 				 index =5;
-				 gwVoltCell_16 = grwBatDat[index]+grwBatDat[index+1];
+				 gwVoltCell_17 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 					index+=2;
-				  gwVoltCell_17 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_18 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 				 index+=2;
-				  gwVoltCell_18 = grwBatDat[index]+grwBatDat[index+1];
+				  gwVoltCell_19 = grwBatDat[index]+(grwBatDat[index+1]<<8);
 				 index+=2;
-				  gwVoltCell_19 = grwBatDat[index]+grwBatDat[index+1];
-				 index+=2;
-				  gwVoltCell_20 = grwBatDat[index]+grwBatDat[index+1];
-			 }		 
+				  gwVoltCell_20 = grwBatDat[index]+(grwBatDat[index+1]<<8);
+			 }
+
+       			 
+			 
+			 
 			 
 			 CANDataAvalFlag=5;
        BLEStopSendMsgDelayCount=5;   /*use the delay to optimize user feeling */
       
 			 memset(grwBatDat,0x00,sizeof(grwBatDat));
+			 
+			updateBLEMsg();
 	
      }
 
-     updateBLEMsg();		 
+    		 
      
      
       
@@ -206,6 +395,16 @@ void updateGwInfo(void)
 
 void updateBLEMsg(void)
 {
+	
+	   CANRxData[0][0]=0;
+		 CANRxData[1][0]=0;
+		 CANRxData[2][0]=0;
+		 CANRxData[3][0]=0;
+		 CANRxData[4][0]=0;
+		 CANRxData[5][0]=0;
+		 CANRxData[6][0]=0;
+		 CANRxData[7][0]=0;
+	
 			CANRxData[0][1]= (uint8_t)AQ_MSG0_181 & 0xff;
       CANRxData[0][2]= gwBatSOH;
       CANRxData[0][3] = gwBatSOC;
@@ -215,6 +414,8 @@ void updateBLEMsg(void)
       CANRxData[0][7] =  (gwBatVolt&0x00ff);
       CANRxData[0][8] =  ((gwBatCurrent&0xff00)>>8);
       CANRxData[0][9] =  (gwBatCurrent&0x00ff);
+	
+			CANRxData[0][10]=   0x183 & 0xff;
 	
 			CANRxData[1][1] = 	(uint8_t)AQ_MSG160 & 0xff;
       CANRxData[1][2] = 	(gwVoltCell_1&0xff00)>>8;
@@ -237,67 +438,84 @@ void updateBLEMsg(void)
       CANRxData[1][18] =   gwVoltCell_8&0xff;
 			
 			CANRxData[2][1] = 	(uint8_t)AQ_MSG162 & 0xff;
-      CANRxData[2][2] = 	(gwVoltCell_1&0xff00)>>8;
-      CANRxData[2][3] = 	gwVoltCell_1&0xff;
-      CANRxData[2][4] =	  (gwVoltCell_2&0xff00)>>8;
-	    CANRxData[2][5] = 	gwVoltCell_2&0xff;
-      CANRxData[2][6] =  (gwVoltCell_3&0xff00)>>8;
-      CANRxData[2][7] =   gwVoltCell_3&0xff;
-      CANRxData[2][8] =  (gwVoltCell_4&0xff00)>>8;
-      CANRxData[2][9] =   gwVoltCell_4&0xff;
+      CANRxData[2][2] = 	(gwVoltCell_9&0xff00)>>8;
+      CANRxData[2][3] = 	gwVoltCell_9&0xff;
+      CANRxData[2][4] =	  (gwVoltCell_10&0xff00)>>8;
+	    CANRxData[2][5] = 	gwVoltCell_10&0xff;
+      CANRxData[2][6] =  (gwVoltCell_11&0xff00)>>8;
+      CANRxData[2][7] =   gwVoltCell_11&0xff;
+      CANRxData[2][8] =  (gwVoltCell_12&0xff00)>>8;
+      CANRxData[2][9] =   gwVoltCell_12&0xff;
 	
 			CANRxData[2][10]= (uint8_t)AQ_MSG163 & 0xff;
-      CANRxData[2][11] = 	(gwVoltCell_5&0xff00)>>8;
-      CANRxData[2][12] = 	gwVoltCell_5&0xff;
-      CANRxData[2][13] =	  (gwVoltCell_6&0xff00)>>8;
-	    CANRxData[2][14] = 	gwVoltCell_6&0xff;
-      CANRxData[2][15] =  (gwVoltCell_7&0xff00)>>8;
-      CANRxData[2][16] =   gwVoltCell_7&0xff;
-      CANRxData[2][17] =  (gwVoltCell_8&0xff00)>>8;
-      CANRxData[2][18] =   gwVoltCell_8&0xff;
+      CANRxData[2][11] = 	(gwVoltCell_13&0xff00)>>8;
+      CANRxData[2][12] = 	gwVoltCell_13&0xff;
+      CANRxData[2][13] =	  (gwVoltCell_14&0xff00)>>8;
+	    CANRxData[2][14] = 	gwVoltCell_14&0xff;
+      CANRxData[2][15] =  (gwVoltCell_15&0xff00)>>8;
+      CANRxData[2][16] =   gwVoltCell_15&0xff;
+      CANRxData[2][17] =  (gwVoltCell_16&0xff00)>>8;
+      CANRxData[2][18] =   gwVoltCell_16&0xff;
 
 			CANRxData[3][1] = 	(uint8_t)AQ_MSG164 & 0xff;
-      CANRxData[3][2] = 	(gwVoltCell_1&0xff00)>>8;
-      CANRxData[3][3] = 	gwVoltCell_1&0xff;
-      CANRxData[3][4] =	  (gwVoltCell_2&0xff00)>>8;
-	    CANRxData[3][5] = 	gwVoltCell_2&0xff;
-      CANRxData[3][6] =  (gwVoltCell_3&0xff00)>>8;
-      CANRxData[3][7] =   gwVoltCell_3&0xff;
-      CANRxData[3][8] =  (gwVoltCell_4&0xff00)>>8;
-      CANRxData[3][9] =   gwVoltCell_4&0xff;
+      CANRxData[3][2] = 	(gwVoltCell_17&0xff00)>>8;
+      CANRxData[3][3] = 	gwVoltCell_17&0xff;
+      CANRxData[3][4] =	  (gwVoltCell_18&0xff00)>>8;
+	    CANRxData[3][5] = 	gwVoltCell_18&0xff;
+      CANRxData[3][6] =  (gwVoltCell_19&0xff00)>>8;
+      CANRxData[3][7] =   gwVoltCell_19&0xff;
+      CANRxData[3][8] =  (gwVoltCell_20&0xff00)>>8;
+      CANRxData[3][9] =   gwVoltCell_20&0xff;
 			
+			CANRxData[3][10] = 	(uint8_t)AQ_MSG165 & 0xff;
+      CANRxData[3][11] = 	gwBatTemp>>8;
+      CANRxData[3][12] = 	gwBatTemp;
+      CANRxData[3][13] =	gwBatTemp>>8;
+	    CANRxData[3][14] = 	gwBatTemp;
+      CANRxData[3][15] =  gwBatTemp>>8;
+      CANRxData[3][16] =  gwBatTemp;
+      CANRxData[3][17] =  gwBatTemp>>8;
+      CANRxData[3][18] =  gwBatTemp;
 			
 			
 		  CANRxData[4][1] = 	(uint8_t)AQ_MSG166 & 0xff;
-      CANRxData[4][2] = 	(gwMaxcellVolt&0xff00)>>8;
-      CANRxData[4][3] = 	gwMaxcellVolt&0xff;
-      CANRxData[4][4] =	  (gwMincellVolt&0xff00)>>8;
-	    CANRxData[4][5] = 	gwMincellVolt&0xff;
-      CANRxData[4][6] =  0;
-      CANRxData[4][7] =  0;
-      CANRxData[4][8] =  ((gwMaxcellVolt-gwMincellVolt) &0xff00)>>8;
-      CANRxData[4][9] =   (gwMaxcellVolt-gwMincellVolt)&0xff;
+      CANRxData[4][2] = 	(gwVoltCellMax&0xff00)>>8;
+      CANRxData[4][3] = 	gwVoltCellMax&0xff;
+      CANRxData[4][4] =	  (gwVoltCellMin&0xff00)>>8;
+	    CANRxData[4][5] = 	gwVoltCellMin&0xff;
+      CANRxData[4][6] =   0;
+      CANRxData[4][7] =   0;
+      CANRxData[4][8] =  ((gwVoltCellMax-gwVoltCellMin) &0xff00)>>8;
+      CANRxData[4][9] =   (gwVoltCellMax-gwVoltCellMin)&0xff;
 			
 			CANRxData[4][10] = 	(uint8_t)AQ_MSG167 & 0xff;
-      CANRxData[4][11] = 	(gwMaxcellTemp&0xff00)>>8;
-      CANRxData[4][12] = 	gwMaxcellTemp&0xff;
-      CANRxData[4][13] =	(gwMincellTemp&0xff00)>>8;
-	    CANRxData[4][14] = 	gwMincellTemp&0xff;
+      CANRxData[4][11] = 	(gwBatTemp&0xff00)>>8;
+      CANRxData[4][12] = 	gwBatTemp&0xff;
+      CANRxData[4][13] =	(gwBatTemp&0xff00)>>8;
+	    CANRxData[4][14] = 	gwBatTemp&0xff;
       CANRxData[4][15] =  0;
       CANRxData[4][16] =  0;
-      CANRxData[4][17] =  ((gwMaxcellTemp-gwMincellTemp) &0xff00)>>8;
-      CANRxData[4][18] =  (gwMaxcellTemp-gwMincellTemp)&0xff;
+      CANRxData[4][17] =  ((gwBatTemp-gwBatTemp) &0xff00)>>8;
+      CANRxData[4][18] =  (gwBatTemp-gwBatTemp)&0xff;
 			
 			
 			CANRxData[5][1] = 	(uint8_t)AQ_MSG168 & 0xff;
-      CANRxData[5][2] = 	(gwMaxcellVolt&0xff00)>>8;
-      CANRxData[5][3] = 	gwMaxcellVolt&0xff;
-      CANRxData[5][4] =	  (gwMincellVolt&0xff00)>>8;
-	    CANRxData[5][5] = 	gwMincellVolt&0xff;
-      CANRxData[5][6] =  0;
-      CANRxData[5][7] =  0;
-      CANRxData[5][8] =  ((gwMaxcellVolt-gwMincellVolt) &0xff00)>>8;
-      CANRxData[5][9] =   (gwMaxcellVolt-gwMincellVolt)&0xff;
+      CANRxData[5][2] = 	gwDischargeTempLow + (gwDischargeTempHigh<<2) + (gwChargeTempLow<<4) +(gwDischargeTempHigh<<6);
+      CANRxData[5][3] = 	0;
+      CANRxData[5][4] =	  0;
+	    CANRxData[5][5] = 	0;
+      CANRxData[5][6] =   0;
+      CANRxData[5][7] =   0;
+      CANRxData[5][8] =   0;
+      CANRxData[5][9] =   0;
+			
+			CANRxData[5][10]= 0x69;
+			
+			CANRxData[6][1]= 0x84;
+			CANRxData[6][10]= 0x85;
+			
+			CANRxData[7][1]= 0x86;
+			CANRxData[7][10]= 0x87;
 	    
 }
 
@@ -321,14 +539,14 @@ void updateGreenwayBatInfo(CAN_RxHeaderTypeDef *rxMsg,uint8_t* canRxData)
 	{	
 		updateGwInfo();
 		canBufCnt=0;	
-		memcpy(&grwBatDat[canBufCnt*8],CANRxData,canRxLen);
+		memcpy(&grwBatDat[canBufCnt*8],canRxData,canRxLen);
 		canBufCnt++;		
 	}
 	else
 	{
 		if(canBufCnt*8<80)
 		{
-			memcpy(&grwBatDat[canBufCnt*8],CANRxData,canRxLen);
+			memcpy(&grwBatDat[canBufCnt*8],canRxData,canRxLen);
 			canBufCnt++;
 		}
 	}
