@@ -80,10 +80,10 @@ static StackType_t xIdleStack[configMINIMAL_STACK_SIZE];
 
 void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize )
 {
-  *ppxIdleTaskTCBBuffer = &xIdleTaskTCBBuffer;
-  *ppxIdleTaskStackBuffer = &xIdleStack[0];
-  *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
-  /* place for user code */
+    *ppxIdleTaskTCBBuffer = &xIdleTaskTCBBuffer;
+    *ppxIdleTaskStackBuffer = &xIdleStack[0];
+    *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+    /* place for user code */
 }
 /* USER CODE END GET_IDLE_TASK_MEMORY */
 
@@ -93,46 +93,46 @@ void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackTy
   * @retval None
   */
 void MX_FREERTOS_Init(void) {
-  /* USER CODE BEGIN Init */
+    /* USER CODE BEGIN Init */
 
-  /* USER CODE END Init */
+    /* USER CODE END Init */
 
-  /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
-  /* USER CODE END RTOS_MUTEX */
+    /* USER CODE BEGIN RTOS_MUTEX */
+    /* add mutexes, ... */
+    /* USER CODE END RTOS_MUTEX */
 
-  /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
-  /* USER CODE END RTOS_SEMAPHORES */
+    /* USER CODE BEGIN RTOS_SEMAPHORES */
+    /* add semaphores, ... */
+    /* USER CODE END RTOS_SEMAPHORES */
 
-  /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
-  /* USER CODE END RTOS_TIMERS */
+    /* USER CODE BEGIN RTOS_TIMERS */
+    /* start timers, add new ones, ... */
+    /* USER CODE END RTOS_TIMERS */
 
-  /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
-  /* USER CODE END RTOS_QUEUES */
+    /* USER CODE BEGIN RTOS_QUEUES */
+    /* add queues, ... */
+    /* USER CODE END RTOS_QUEUES */
 
-  /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+    /* Create the thread(s) */
+    /* definition and creation of defaultTask */
+    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
-  /* definition and creation of BleTask */
-  osThreadDef(BleTask, BleMainTask, osPriorityNormal, 0, 128);
-  BleTaskHandle = osThreadCreate(osThread(BleTask), NULL);
+    /* definition and creation of BleTask */
+    osThreadDef(BleTask, BleMainTask, osPriorityNormal, 0, 128);
+    BleTaskHandle = osThreadCreate(osThread(BleTask), NULL);
 
-  /* definition and creation of CANReqTask */
-  osThreadDef(CANReqTask, CANReqMainTask, osPriorityIdle, 0, 128);
-  CANReqTaskHandle = osThreadCreate(osThread(CANReqTask), NULL);
+    /* definition and creation of CANReqTask */
+    osThreadDef(CANReqTask, CANReqMainTask, osPriorityIdle, 0, 128);
+    CANReqTaskHandle = osThreadCreate(osThread(CANReqTask), NULL);
 
-  /* definition and creation of ledTask */
-  osThreadDef(ledTask, LedControlMainTask, osPriorityIdle, 0, 128);
-  ledTaskHandle = osThreadCreate(osThread(ledTask), NULL);
+    /* definition and creation of ledTask */
+    osThreadDef(ledTask, LedControlMainTask, osPriorityIdle, 0, 128);
+    ledTaskHandle = osThreadCreate(osThread(ledTask), NULL);
 
-  /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
-  /* USER CODE END RTOS_THREADS */
+    /* USER CODE BEGIN RTOS_THREADS */
+    /* add threads, ... */
+    /* USER CODE END RTOS_THREADS */
 
 }
 
@@ -145,16 +145,16 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void const * argument)
 {
-  /* USER CODE BEGIN StartDefaultTask */
-  /* Infinite loop */
-  TpInit();
-  for(;;)
-  {
-    TpTask();
-    DescTask();
-    osDelay(1);
-  }
-  /* USER CODE END StartDefaultTask */
+    /* USER CODE BEGIN StartDefaultTask */
+    /* Infinite loop */
+    TpInit();
+    for(;;)
+    {
+        TpTask();
+        DescTask();
+        osDelay(1);
+    }
+    /* USER CODE END StartDefaultTask */
 }
 
 /* USER CODE BEGIN Header_BleMainTask */
@@ -166,17 +166,17 @@ void StartDefaultTask(void const * argument)
 /* USER CODE END Header_BleMainTask */
 void BleMainTask(void const * argument)
 {
-  /* USER CODE BEGIN BleMainTask */
+    /* USER CODE BEGIN BleMainTask */
     enableBLE();
-  /* Infinite loop */
-  for(;;)
-  {
-    checkBLEConnectStatus();
-    if(CANDataAvalFlag>0) CANDataAvalFlag--;
-    sendAllBLEMsg();
-    osDelay(1000);
-  }
-  /* USER CODE END BleMainTask */
+    /* Infinite loop */
+    for(;;)
+    {
+        checkBLEConnectStatus();
+        if(CANDataAvalFlag>0) CANDataAvalFlag--;
+        sendAllBLEMsg();
+        osDelay(1000);
+    }
+    /* USER CODE END BleMainTask */
 }
 
 /* USER CODE BEGIN Header_CANReqMainTask */
@@ -188,14 +188,14 @@ void BleMainTask(void const * argument)
 /* USER CODE END Header_CANReqMainTask */
 void CANReqMainTask(void const * argument)
 {
-  /* USER CODE BEGIN CANReqMainTask */
-  initCANSndMsg();
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END CANReqMainTask */
+    /* USER CODE BEGIN CANReqMainTask */
+    initCANSndMsg();
+    /* Infinite loop */
+    for(;;)
+    {
+        osDelay(1);
+    }
+    /* USER CODE END CANReqMainTask */
 }
 
 /* USER CODE BEGIN Header_LedControlMainTask */
@@ -207,54 +207,54 @@ void CANReqMainTask(void const * argument)
 /* USER CODE END Header_LedControlMainTask */
 void LedControlMainTask(void const * argument)
 {
-  /* USER CODE BEGIN LedControlMainTask */
-  /* Infinite loop */
-	uint8_t index=0;
-  for(;;)
-  {
-    osDelay(1000);
-    monitorDTC();
-    toggleLeds();
-		if(index%20==0)
-		{
-			reqBMSData(0x16,16);
-		}
-		else if(index%20==2)
-		{
-			reqBMSData(0x8,32);
-		}
-		else if(index%20==4)
-		{
-			reqBMSData(0x9,4);
-		}
-		else if(index%20==5)
-		{
-			reqBMSData(0xa,4);
-		}
-		else if(index%20==6)
-		{
-			reqBMSData(0xd,4);
-		}
-		else if(index%20==10)
-		{
-			reqBMSData(0xe,4);
-		}
-		else if(index%20==12)
-		{
-			reqBMSData(0x24,32);
-		}
-		else if(index%20==14)
-		{
-				reqBMSData(0x25,32);
-		}
-		else if(index%20==16)
-		{
-			reqBMSData(0x26,14);
-		}
-		index++;
-		
-  }
-  /* USER CODE END LedControlMainTask */
+    /* USER CODE BEGIN LedControlMainTask */
+    /* Infinite loop */
+    uint8_t index=0;
+    for(;;)
+    {
+        osDelay(1000);
+        monitorDTC();
+        toggleLeds();
+        if(index%20==0)
+        {
+            reqBMSData(0x16,16);
+        }
+        else if(index%20==2)
+        {
+            reqBMSData(0x8,32);
+        }
+        else if(index%20==4)
+        {
+            reqBMSData(0x9,4);
+        }
+        else if(index%20==5)
+        {
+            reqBMSData(0xa,4);
+        }
+        else if(index%20==6)
+        {
+            reqBMSData(0xd,4);
+        }
+        else if(index%20==10)
+        {
+            reqBMSData(0xe,4);
+        }
+        else if(index%20==12)
+        {
+            reqBMSData(0x24,32);
+        }
+        else if(index%20==14)
+        {
+            reqBMSData(0x25,32);
+        }
+        else if(index%20==16)
+        {
+            reqBMSData(0x26,14);
+        }
+        index++;
+
+    }
+    /* USER CODE END LedControlMainTask */
 }
 
 /* Private application code --------------------------------------------------*/

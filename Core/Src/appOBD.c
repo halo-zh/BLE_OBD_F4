@@ -87,7 +87,7 @@ void monitorDTC()
      {    
        data[0]= 0xAA;
      }
-		 HAL_CAN_AddTxMessage(&hcan1,&canMsg,data,&mailbox1);		 
+     HAL_CAN_AddTxMessage(&hcan1,&canMsg,data,&mailbox1);		 
      HAL_CAN_AddTxMessage(&hcan2,&canMsg,data,&mailbox1);
 }
 

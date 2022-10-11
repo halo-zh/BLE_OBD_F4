@@ -173,22 +173,22 @@
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gwVoltCell_1,0x10</ItemText>
+          <ItemText>gwVoltCell_1,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gwVoltCell_2</ItemText>
+          <ItemText>gwVoltCell_2,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gwVoltCell_3</ItemText>
+          <ItemText>gwVoltCell_3,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gwVoltCell_20,0x10</ItemText>
+          <ItemText>gwVoltCell_20,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
@@ -208,12 +208,12 @@
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gwBatSOC</ItemText>
+          <ItemText>gwBatSOC,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gwBatSOH</ItemText>
+          <ItemText>gwBatSOH,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
@@ -224,6 +224,56 @@
           <count>14</count>
           <WinNumber>1</WinNumber>
           <ItemText>CANRxData</ItemText>
+        </Ww>
+        <Ww>
+          <count>15</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gwMaxcellVolt,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>16</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gwMincellVolt,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>17</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gwVoltCell_16,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>18</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gwDischargeTempLow</ItemText>
+        </Ww>
+        <Ww>
+          <count>19</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gwMaxcellTemp,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>20</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gwMincellTemp,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>21</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gwBatTemp,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>22</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gwMaxcellVolt,0x10</ItemText>
+        </Ww>
+        <Ww>
+          <count>23</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gwMincellVolt,0x10</ItemText>
+        </Ww>
+        <Ww>
+          <count>24</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gwVoltCellMin</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
